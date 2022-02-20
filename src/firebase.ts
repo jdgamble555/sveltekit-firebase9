@@ -7,7 +7,7 @@ import {
     signOut
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-import { readable, writable } from 'svelte/store';
+import { readable, writable, type Subscriber } from 'svelte/store';
 import { getFirestore, onSnapshot } from 'firebase/firestore';
 import {
     addDoc,
@@ -57,14 +57,11 @@ export async function logout() {
     return await signOut(auth);
 }
 
-export const user = readable<UserRec>(null, set => {
-    const unsubscribe = onIdTokenChanged(auth, (u: User) => set(u));
-    return () => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
-    }
-});
+export const user = readable<UserRec>(
+    null,
+    (set: Subscriber<UserRec>) =>
+        onIdTokenChanged(auth, (u: User) => set(u))
+);
 
 // firestore
 
@@ -79,23 +76,20 @@ interface Todo {
 
 // Todos
 
-export const getTodos = (uid: string) => writable<Todo[]>(null, (set) => {
-    const unsubscribe = onSnapshot<Todo[]>(
-        query<Todo[]>(
-            collection(db, 'todos') as CollectionReference<Todo[]>,
-            where('uid', '==', uid),
-            orderBy('created')
-        ), (q) => {
-            const todos = [];
-            q.forEach((doc) => todos.push({ ...doc.data(), id: doc.id }));
-            set(todos);
-        });
-    return () => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
-    }
-});
+export const getTodos = (uid: string) => writable<Todo[]>(
+    null,
+    (set: Subscriber<Todo[]>) =>
+        onSnapshot<Todo[]>(
+            query<Todo[]>(
+                collection(db, 'todos') as CollectionReference<Todo[]>,
+                where('uid', '==', uid),
+                orderBy('created')
+            ), (q) => {
+                const todos = [];
+                q.forEach((doc) => todos.push({ ...doc.data(), id: doc.id }));
+                set(todos);
+            })
+);
 
 export const addTodo = (uid: string, text: string) => {
     addDoc(collection(db, 'todos'), {
