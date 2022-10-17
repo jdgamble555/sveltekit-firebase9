@@ -23,17 +23,17 @@ import {
 } from 'firebase/firestore';
 
 // env variables
-let process: any;
-const p = process?.env ? process.env : import.meta.env;
+/*let process: any;
+const p = process?.env ? process.env : import.meta.env;*/
 
 const firebase_config = {
-    "apiKey": p.VITE_FIREBASE_APIKEY,
-    "authDomain": p.VITE_FIREBASE_AUTH_DOMAIN,
-    "projectId": p.VITE_FIREBASE_PROJECT_ID,
-    "storageBucket": p.VITE_FIREBASE_STORAGE_BUCKET,
-    "messagingSenderId": p.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    "appId": p.VITE_FIREBASE_MEASUREMENT_ID,
-    "measurementId": p.VITE_DGRAPH_ENDPOINT
+    apiKey: "AIzaSyC7Tu56_1ry-u9AnZfg_AjiMWvvNmFIPGU",
+    authDomain: "test-projects-19046.firebaseapp.com",
+    projectId: "test-projects-19046",
+    storageBucket: "test-projects-19046.appspot.com",
+    messagingSenderId: "736849418469",
+    appId: "1:736849418469:web:7546f16c5e355b1c6a9c0c",
+    measurementId: "G-FKRCW93P0X"
 };
 
 // initialize and login
@@ -66,6 +66,7 @@ export const user = readable<UserRec>(
 // firestore
 
 const db = getFirestore(firebaseApp);
+
 
 interface Todo {
     id: string;
