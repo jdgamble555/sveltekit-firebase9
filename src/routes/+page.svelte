@@ -14,3 +14,10 @@
 		<button on:click={loginWithGoogle}>Signin with Google</button>
 	{/if}
 </section>
+
+<style>
+	section {
+		/*background: rgb(235, 235, 235);*/
+		padding: 20px;
+	}
+</style>

@@ -86,9 +86,10 @@ export const getTodos = (uid: string) => writable<Todo[]>(
                 where('uid', '==', uid),
                 orderBy('created')
             ), (q) => {
-                const todos = [];
-                q.forEach((doc) => todos.push({ ...doc.data(), id: doc.id }));
-                set(todos);
+                set(q.empty
+                    ? []
+                    : q.docs.map((doc) => ({ ...doc.data() as any, id: doc.id }))
+                );
             })
 );
 
