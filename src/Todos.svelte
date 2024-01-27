@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { addTodo, deleteTodo, getTodos, updateTodo } from './firebase';
+	import { addTodo, deleteTodo, getTodos, updateTodo } from '$lib/firebase';
 	import TodoItem from './TodoItem.svelte';
 
 	// User ID passed from parent
-	export let uid = undefined;
+	export let user: UserType;
 
 	// Form Text
 	let text = 'some task';
 
-	const todos = getTodos(uid);
+	const todos = getTodos(user.uid);
 
 	function add() {
-		addTodo(uid, text);
+		addTodo(user.uid, text);
 		text = '';
 	}
 
@@ -26,13 +26,11 @@
 	}
 </script>
 
-{#if $todos && $todos.length}
+{#if $todos?.length}
 	<ul>
-		{#each $todos as todo}
+		{#each $todos || [] as todo}
 			<TodoItem
-				id={todo.id}
-				text={todo.text}
-				complete={todo.complete}
+				{todo}
 				on:remove={removeItem}
 				on:toggle={updateStatus}
 			/>

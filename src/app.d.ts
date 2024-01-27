@@ -2,12 +2,34 @@
 
 // See https://kit.svelte.dev/docs/typescript
 // for information about these interfaces
-declare namespace App {
-	interface Locals {}
 
-	interface Platform {}
+declare global {
 
-	interface Session {}
+	type UserType = {
+		displayName: string | null;
+		photoURL: string | null;
+		uid: string;
+		email: string | null;
+	};
 
-	interface Stuff {}
+	type Todo = {
+		id: string;
+		text: string;
+		complete: boolean;
+		createdAt: Date;
+	};
+
+	declare namespace App {
+
+		interface Locals { }
+
+		interface Platform { }
+
+		interface Session { }
+
+		interface Stuff { }
+	}
+
 }
+
+export { }

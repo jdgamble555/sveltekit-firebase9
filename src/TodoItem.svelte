@@ -1,30 +1,27 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-
 	import { createEventDispatcher } from 'svelte';
+
+	export let todo: Todo;
 
 	const dispatch = createEventDispatcher();
 
 	function remove() {
-		dispatch('remove', { id });
+		dispatch('remove', { id: todo.id });
 	}
 
 	function toggleStatus() {
-		let newStatus = !complete;
+		let newStatus = !todo.complete;
 		dispatch('toggle', {
-			id,
+			id: todo.id,
 			newStatus
 		});
 	}
-
-	export let id = undefined;
-	export let text = undefined;
-	export let complete = undefined;
 </script>
 
 <li in:fly={{ x: 900, duration: 500 }}>
-	<span class:complete>{text} - {id}</span>
-	{#if complete}
+	<span class:complete={todo.complete}>{todo.text} - {todo.id}</span>
+	{#if todo.complete}
 		<button on:click={toggleStatus}> ✔️ </button>
 	{:else}
 		<button on:click={toggleStatus}> ❌ </button>

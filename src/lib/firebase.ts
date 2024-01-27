@@ -12,7 +12,6 @@ import { getFirestore, onSnapshot } from 'firebase/firestore';
 import {
     addDoc,
     collection,
-    CollectionReference,
     deleteDoc,
     doc,
     orderBy,
@@ -21,29 +20,11 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
+import { PUBLIC_FIREBASE_CONFIG } from '$env/static/public';
 
-// env variables
-/*let process: any;
-const p = process?.env ? process.env : import.meta.env;*/
-
-const firebase_config = {
-    apiKey: "AIzaSyC7Tu56_1ry-u9AnZfg_AjiMWvvNmFIPGU",
-    authDomain: "test-projects-19046.firebaseapp.com",
-    projectId: "test-projects-19046",
-    storageBucket: "test-projects-19046.appspot.com",
-    messagingSenderId: "736849418469",
-    appId: "1:736849418469:web:7546f16c5e355b1c6a9c0c",
-    measurementId: "G-FKRCW93P0X"
-};
+const firebase_config = JSON.parse(PUBLIC_FIREBASE_CONFIG);
 
 // initialize and login
-
-interface UserRec {
-    displayName: string;
-    photoURL: string;
-    uid: string;
-    email: string;
-};
 
 const firebaseApp = initializeApp(firebase_config);
 
@@ -57,38 +38,37 @@ export async function logout() {
     return await signOut(auth);
 }
 
-export const user = readable<UserRec>(
+export const user = readable<UserType | null>(
     null,
-    (set: Subscriber<UserRec>) =>
-        onIdTokenChanged(auth, (u: User) => set(u))
+    (set: Subscriber<UserType | null>) =>
+        onIdTokenChanged(auth, (_user: User | null) => {
+            if (!_user) {
+                set(null);
+                return;
+            }
+            const { displayName, photoURL, uid, email } = _user;
+            set({ displayName, photoURL, uid, email });
+        })
 );
 
 // firestore
 
 const db = getFirestore(firebaseApp);
 
-
-interface Todo {
-    id: string;
-    text: string;
-    complete: boolean;
-    createdAt: Date;
-}
-
 // Todos
 
-export const getTodos = (uid: string) => writable<Todo[]>(
+export const getTodos = (uid: string) => writable<Todo[] | null>(
     null,
-    (set: Subscriber<Todo[]>) =>
-        onSnapshot<Todo[]>(
-            query<Todo[]>(
-                collection(db, 'todos') as CollectionReference<Todo[]>,
+    (set: Subscriber<Todo[] | null>) =>
+        onSnapshot(
+            query(
+                collection(db, 'todos'),
                 where('uid', '==', uid),
                 orderBy('created')
             ), (q) => {
                 set(q.empty
                     ? []
-                    : q.docs.map((doc) => ({ ...doc.data() as any, id: doc.id }))
+                    : q.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Todo[]
                 );
             })
 );
